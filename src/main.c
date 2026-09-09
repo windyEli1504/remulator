@@ -28,5 +28,9 @@ int main(int argc, char *argv[]) {
         return 1;
     } else fprintf(stderr, "Firmware successfully initialized!\nProceeding to execution pipeline.\n");
 
+    while(1) {
+        // CPU loop
+    }
+
     fclose(firmware);
 }
