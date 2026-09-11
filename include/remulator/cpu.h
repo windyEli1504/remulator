@@ -6,6 +6,3 @@ typedef struct {
     uint32_t pc;
 } rv32i_proc;
 
-void fetch();
-void decode();
-void execute();
