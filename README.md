@@ -1,8 +1,8 @@
 # remulator
 
-A work-in-progress **RV32I emulator** written in C, built for educational and testing purposes.
+A work-in-progress, bare-metal **RV32IM emulator** written in C, built for educational and testing purposes.
 
-The project aims to provide a simple, understandable virtual machine environment for experimenting with the RISC-V architecture, memory systems, virtual hardware, and low-level debugging, capable of running bare metal RV32I firmware.
+The project aims to provide a simple, understandable virtual machine environment for experimenting with the 32-bit RISC-V architecture, memory systems, virtual hardware, and low-level debugging, capable of running bare metal RV32IM firmware and fully compliant with rv32ui and rv32mi test suites (omitting Supervisor-mode and Virtual Memory (MMU) support needed for OS boot).
 
 > **Status:** Work in progress — currently focused on the core emulation infrastructure.
 
@@ -12,8 +12,8 @@ The project aims to provide a simple, understandable virtual machine environment
 
 Once completed, `remulator` is intended to provide:
 
-1. **RV32I ISA emulation**
-   - Full implementation of the RV32I base instruction set
+1. **RV32IM ISA emulation**
+   - Full implementation of the RV32I base instruction set + M-extenstion
    - ILP32 ABI support
 
 2. **System memory**
@@ -41,7 +41,7 @@ The planned hardware device list is subject to change as development progresses.
 
 Development is in very early stages and is currently centered around the core components required to build the emulator:
 
-- RV32I instruction-set implementation
+- RV32IM instruction-set implementation
 - CPU state and instruction execution
 - Memory subsystem
 - Address bus
