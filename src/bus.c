@@ -3,7 +3,7 @@
 #include<stdint.h>
 
 const uint32_t MMIO_BASE_ADDR = MAX_PAGE_NUM * (1U << PAGE_SIZE_LOG);
-const uint32_t MAX_ADDR = ((uint64_t)1U << 32) - 1;
+const uint32_t MAX_ADDR = 0xFFFFFFFF;
 
 uint8_t fetch8(uint32_t addr) {
     if(addr > MAX_ADDR) {

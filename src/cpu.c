@@ -2,72 +2,66 @@
 #include<remulator/cpu.h>
 #include<remulator/bus.h>
 
-rv32i_proc cpu;
-
-uint32_t instruction;
-
-void fetch() {
-    instruction = fetch32(cpu.pc);
+void cpu_init(rv32i_proc *cptr) {
+    cptr->pc = 0x0; // replace this with starting address upon boot later
+    cptr->x[0] = 0x0;
 }
 
-void r_type() {
-    uint8_t rd = (instruction >>= 7) & 0x1F;
-    uint8_t func3 = (instruction >>= 5) & 0x7;
-    uint8_t rs1 = (instruction >>= 3) & 0x1F;
-    uint8_t rs2 = (instruction >>= 5) & 0x1F;
-    uint8_t func7 = instruction >> 5; 
+void fetch(rv32i_proc *cptr) {
+    cptr->instr = fetch32(cptr->pc);
+}
+
+void r_type(rv32i_proc *cptr) {
+    uint8_t rd = (cptr->instr >>= 7) & 0x1F;
+    uint8_t func3 = (cptr->instr >>= 5) & 0x7;
+    uint8_t rs1 = (cptr->instr >>= 3) & 0x1F;
+    uint8_t rs2 = (cptr->instr >>= 5) & 0x1F;
+    uint8_t func7 = cptr->instr >> 5; 
 
     if(func7 == 0x20) {
-        if(func3 == 0x0) {
-            cpu.x[rd] = cpu.x[rs1]-cpu.x[rs2];
-        } else if(func3 == 0x5) {
-            cpu.x[rd] = cpu.x[rs1] >> cpu.x[rs2];
-            if(cpu.x[rs1] >> 31 == 1) {
-                uint32_t upper_ones = 0xFFFFFFFF & (1 << (32-cpu.x[rs2]));
-                cpu.x[rd] += upper_ones;
-            }
+        if(func3 == 0x0) cptr->x[rd] = cptr->x[rs1]-cptr->x[rs2];
+        else if(func3 == 0x5) {
+            if(cptr->x[rs1] >> 31 == 1) cptr->x[rd] = (int32_t)cptr->x[rs1] >> cptr->x[rs2];
+            else cptr->x[rd] = cptr->x[rs1] >> cptr->x[rs2];
         } else {
             // Error
         }
     } else {
         switch(func3) {
-            case 0x0:
-                cpu.x[rd] = cpu.x[rs1]+cpu.x[rs2];
-                break;
-            case 0x1:
-                cpu.x[rd] = cpu.x[rs1] << cpu.x[rs2];
-                break;
-            case 0x2:
-                cpu.x[rd] = (int32_t)cpu.x[rs1] < (int32_t)cpu.x[rs2];
-                break;
-            case 0x3:
-                cpu.x[rd] = cpu.x[rs1] < cpu.x[rs2];
-                break;
-            case 0x4:
-                cpu.x[rd] = cpu.x[rs1] ^ cpu.x[rs2];
-                break;
-            case 0x5:
-                cpu.x[rd] = cpu.x[rs1] >> cpu.x[rs2];
-                break;
-            case 0x6:
-                cpu.x[rd] = cpu.x[rs1] | cpu.x[rs2];
-                break;
-            case 0x7:
-                cpu.x[rd] = cpu.x[rs1] & cpu.x[rs2];
-                break;
-            default:
-                // Error
-                break;
+            case 0x0: cptr->x[rd] = cptr->x[rs1]+cptr->x[rs2]; break;
+            case 0x1: cptr->x[rd] = cptr->x[rs1] << cptr->x[rs2]; break;
+            case 0x2: cptr->x[rd] = (int32_t)cptr->x[rs1] < (int32_t)cptr->x[rs2]; break;
+            case 0x3: cptr->x[rd] = cptr->x[rs1] < cptr->x[rs2]; break;
+            case 0x4: cptr->x[rd] = cptr->x[rs1] ^ cptr->x[rs2]; break;
+            case 0x5: cptr->x[rd] = cptr->x[rs1] >> cptr->x[rs2]; break;
+            case 0x6: cptr->x[rd] = cptr->x[rs1] | cptr->x[rs2]; break;
+            case 0x7: cptr->x[rd] = cptr->x[rs1] & cptr->x[rs2]; break;
+            default: break;
         }
     }
 }
 
-void dispatch() {
-    uint8_t opcode = instruction & 0x7F;
-    switch(opcode) {
-        case 0x33:
-            r_type();
-            break;
+void i_type(rv32i_proc *cptr) {
+    uint8_t rd = (cptr->instr >>= 7) & 0x1F;
+    uint8_t func3 = (cptr->instr >= 5) & 0x7;
+    uint8_t rs1 = (cptr->instr >= 3) & 0x1F;
+    uint16_t imm = cptr->instr >> 5;
+    switch(func3) {
+        case 0x0: cptr->x[rd] = cptr->x[rs1]+imm; break;
         
+    }
+}
+
+void s_type(rv32i_proc *cptr) {
+
+}
+
+void dispatch(rv32i_proc *cptr) {
+    uint8_t opcode = cptr->instr & 0x7F;
+    switch(opcode) {
+        case 0x33: r_type(cptr); break;
+        case 0x3: i_type(cptr); break;
+        case 0x23: s_type(cptr); break;
+        default: break;
     }
 }

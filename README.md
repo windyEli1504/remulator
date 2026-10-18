@@ -13,7 +13,7 @@ The project aims to provide a simple, understandable virtual machine environment
 Once completed, `remulator` is intended to provide:
 
 1. **RV32IM ISA emulation**
-   - Full implementation of the RV32I base instruction set + M-extenstion
+   - Full implementation of the RV32I base cptr->instr set + M-extenstion
    - ILP32 ABI support
 
 2. **System memory**
@@ -41,8 +41,8 @@ The planned hardware device list is subject to change as development progresses.
 
 Development is in very early stages and is currently centered around the core components required to build the emulator:
 
-- RV32IM instruction-set implementation
-- CPU state and instruction execution
+- RV32IM cptr->instr-set implementation
+- CPU state and cptr->instr execution
 - Memory subsystem
 - Address bus
 - MMIO infrastructure
