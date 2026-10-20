@@ -60,7 +60,18 @@ void s_type(rv32i_proc *cptr) {
     }
 }
 
-void j_type(rv32i_proc *cptr);
+void j_type(rv32i_proc *cptr) {
+    uint8_t rd = cptr->instr >> 7 & 0x1F;
+    uint32_t imm = (cptr->instr >> 21 & 0x3FF) + ((cptr->instr >> 20 & 0x1) << 10)
+    + ((cptr->instr >> 12 & 0xFF) << 11) + ((int32_t)cptr->instr >> 31 << 19);
+    imm <<= 1;
+    uint32_t target_addr = cptr->pc+imm;
+    if((target_addr & 0x3) != 0) {
+        // Misaligned instruction access fault
+    }
+    cptr->x[rd] = cptr->pc+4;
+    cptr->pc = target_addr;
+}
 
 void dispatch(rv32i_proc *cptr) {
     uint8_t opcode = cptr->instr & 0x7F;
@@ -71,4 +82,5 @@ void dispatch(rv32i_proc *cptr) {
         case 0x6F: j_type(cptr); break;
         default: break;
     }
+    cptr->x[0] = 0;
 }
