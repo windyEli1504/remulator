@@ -40,10 +40,21 @@ void i_type(rv32i_proc *cptr) {
     uint8_t rd = (cptr->instr >> 7) & 0x1F;
     uint8_t func3 = (cptr->instr >> 12) & 0x7;
     uint8_t rs1 = (cptr->instr >> 15) & 0x1F;
-    uint16_t imm = cptr->instr >> 20;
+    int32_t imm = ((int32_t)cptr->instr) >> 20;
+    uint8_t func7 = cptr->instr >> 25;
     switch(func3) {
-        case 0x0: cptr->x[rd] = cptr->x[rs1]+imm; break;
-        
+        case 0x0: cptr->x[rd] = cptr->x[rs1] + imm; break;
+        case 0x1: cptr->x[rd] = cptr->x[rs1] << (imm & 0x1F); break;
+        case 0x2: cptr->x[rd] = (int32_t)cptr->x[rs1] < imm; break;
+        case 0x3: cptr->x[rd] = cptr->x[rs1] <(uint32_t)imm; break;
+        case 0x4: cptr->x[rd] = cptr->x[rs1] ^ imm; break;
+        case 0x5: 
+            if(func7 == 0x20) cptr->x[rd] = (int32_t)cptr->x[rs1] >> (imm & 0x1F);
+            else cptr->x[rd] = cptr->x[rs1] >> (imm & 0x1F);
+            break;
+        case 0x6: cptr->x[rd] = cptr->x[rs1] | imm; break;
+        case 0x7: cptr->x[rd] = cptr->x[rs1] & imm; break;
+        default: break;
     }
 }
 
